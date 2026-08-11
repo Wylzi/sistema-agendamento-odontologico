@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
+
+:root {
+    --cor-primaria: #0E6E6B;
+    --cor-destaque: #FF6B4A;
+    --cor-fundo: #F7F9F9;
+    --cor-texto: #16302E;
+    --cor-borda: #D8E3E2;
+    --cor-texto-suave: #5B7371;
+
+    --fonte-titulo: 'Fraunces', serif;
+    --fonte-corpo: 'IBM Plex Sans', sans-serif;
+    --fonte-dado: 'IBM Plex Mono', monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--fonte-corpo);
+    background: var(--cor-fundo);
+    color: var(--cor-texto);
+    line-height: 1.5;
+    padding: 20px;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+h1, h2 {
+    font-family: var(--fonte-titulo);
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+h1 {
+    font-size: 1.8rem;
+    margin-bottom: 4px;
+}
+
+h2 {
+    font-size: 1.3rem;
+    margin: 24px 0 12px;
+}
+
+label {
+    display: block;
+    font-weight: 500;
+    margin: 14px 0 6px;
+    font-size: 0.9rem;
+}
+
+input, select {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 12px;
+    border: 1px solid var(--cor-borda);
+    border-radius: 6px;
+    font-family: var(--fonte-corpo);
+    font-size: 1rem;
+    background: white;
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--cor-primaria);
+}
+
+button {
+    display: block;
+    width: 100%;
+    max-width: 400px;
+    background: var(--cor-destaque);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 6px;
+    font-family: var(--fonte-corpo);
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 16px;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+button:disabled {
+    background: var(--cor-borda);
+    color: var(--cor-texto);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.grupo-dia {
+    margin: 20px 0 8px;
+}
+
+.grupo-dia:first-child {
+    margin-top: 0;
+}
+
+.dia-semana {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--cor-texto);
+    margin: 0;
+}
+
+.data-numero {
+    font-size: 0.85rem;
+    color: var(--cor-texto-suave);
+    margin: 2px 0 0;
+}
+
+.horario-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: white;
+    border: 1px solid var(--cor-borda);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.horario-card.selecionado {
+    border: 2px solid var(--cor-primaria);
+    padding: 11px 13px;
+}
+
+.horario-card-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.horario-hora {
+    font-family: var(--fonte-dado);
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.chip-vagas {
+    font-size: 0.78rem;
+    background: var(--cor-fundo);
+    color: var(--cor-texto-suave);
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--cor-borda);
+    white-space: nowrap;
+}

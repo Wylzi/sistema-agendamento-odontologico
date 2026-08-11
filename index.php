@@ -7,6 +7,7 @@ $clinicas = listarClinicas();
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="assets/css/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agendar Consulta</title>
 </head>
@@ -31,16 +32,17 @@ $clinicas = listarClinicas();
     <div id="area-resultado"></div>
 
    <script>
-        function formatarData(dataIso) {
-            const [ano, mes, dia] = dataIso.split('-');
-            return `${dia}/${mes}/${ano}`;
-        }
-
         function diaDaSemana(dataIso) {
             const dias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
             const [ano, mes, dia] = dataIso.split('-').map(Number);
             const data = new Date(ano, mes - 1, dia);
             return dias[data.getDay()];
+        }
+
+        function formatarDataExtenso(dataIso) {
+            const meses = ['janeiro', 'fevereiro', 'março', 'abril', 'maio', 'junho', 'julho', 'agosto', 'setembro', 'outubro', 'novembro', 'dezembro'];
+            const [ano, mes, dia] = dataIso.split('-').map(Number);
+            return `${dia} de ${meses[mes - 1]}`;
         }
 
         const selectClinica = document.getElementById('clinica_id');
@@ -68,15 +70,33 @@ $clinicas = listarClinicas();
                     }
 
                     let html = '';
+                    let dataAnterior = null;
+
                     horarios.forEach(h => {
+                        if (h.data !== dataAnterior) {
+                            html += `
+                                <div class="grupo-dia">
+                                    <p class="dia-semana">${diaDaSemana(h.data)}</p>
+                                    <p class="data-numero">${formatarDataExtenso(h.data)}</p>
+                                </div>
+                            `;
+                            dataAnterior = h.data;
+                        }
+
                         const vagasRestantes = h.vagas_totais - h.vagas_ocupadas;
+                        const textoVagas = vagasRestantes === 1 ? 'vaga' : 'vagas';
+
                         html += `
-                            <label>
-                                <input type="radio" name="horario_id" value="${h.id}">
-                                ${diaDaSemana(h.data)}, ${formatarData(h.data)} às ${h.hora} - ${h.dentista_nome} (${vagasRestantes} vagas)
-                            </label><br>
+                            <label class="horario-card">
+                                <span class="horario-card-info">
+                                    <input type="radio" name="horario_id" value="${h.id}">
+                                    <span class="horario-hora">${h.hora.substring(0, 5)}</span>
+                                </span>
+                                <span class="chip-vagas">${vagasRestantes} ${textoVagas}</span>
+                            </label>
                         `;
                     });
+
                     areaHorarios.innerHTML = html;
                 });
         });
@@ -86,6 +106,11 @@ $clinicas = listarClinicas();
             if (evento.target.name !== 'horario_id') {
                 return;
             }
+
+            document.querySelectorAll('.horario-card').forEach(card => {
+                card.classList.remove('selecionado');
+            });
+            evento.target.closest('.horario-card').classList.add('selecionado');
 
             // Se o botão estava travado por causa de um agendamento anterior, libera de novo
             botaoConfirmar.disabled = false;
