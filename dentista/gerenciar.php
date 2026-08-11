@@ -3,6 +3,7 @@ require_once __DIR__ . '/../includes/auth.php';
 exigirLogin();
 
 $clinicas = listarClinicas();
+$meusHorarios = listarMeusHorarios($_SESSION['dentista_id']);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -60,6 +61,25 @@ $clinicas = listarClinicas();
         <button id="btn-cadastrar">Adicionar horário</button>
 
         <div id="area-resultado-cadastro"></div>
+    </div>
+
+    <div class="card">
+        <h2>Meus horários cadastrados</h2>
+
+        <?php if (empty($meusHorarios)): ?>
+            <p>Nenhum horário cadastrado ainda.</p>
+        <?php else: ?>
+            <?php foreach ($meusHorarios as $h): ?>
+                <div class="horario-linha">
+                    <div class="horario-linha-info">
+                        <span class="horario-linha-data"><?= htmlspecialchars(formatarDataBr($h['data'])) ?> · <?= htmlspecialchars(formatarHoraBr($h['hora'])) ?></span>
+                        <span class="horario-linha-clinica"><?= htmlspecialchars($h['clinica_nome']) ?></span>
+                    </div>
+                    <span class="horario-linha-vagas"><?= (int) $h['vagas_ocupadas'] ?>/<?= (int) $h['vagas_totais'] ?></span>
+                    <button type="button" class="btn-remover" data-id="<?= (int) $h['id'] ?>" data-vagas-ocupadas="<?= (int) $h['vagas_ocupadas'] ?>">Remover</button>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </div>
 
     <p><a href="logout.php" class="link-sair">Sair</a></p>
@@ -154,6 +174,44 @@ $clinicas = listarClinicas();
                         resultado.innerHTML = '<p>Erro: ' + resposta.erro + '</p>';
                     }
                 });
+        });
+
+        document.querySelectorAll('.btn-remover').forEach(botao => {
+            botao.addEventListener('click', function () {
+                const horarioId = this.dataset.id;
+                const vagasOcupadas = parseInt(this.dataset.vagasOcupadas, 10);
+                const linha = this.closest('.horario-linha');
+
+                let mensagem = 'Remover esse horário?';
+                if (vagasOcupadas > 0) {
+                    mensagem = `Esse horário tem ${vagasOcupadas} agendamento(s) vinculado(s). Ao remover, esses agendamentos também serão apagados. Continuar?`;
+                }
+
+                if (!confirm(mensagem)) {
+                    return;
+                }
+
+                this.disabled = true;
+                this.textContent = 'Removendo...';
+
+                const dados = new FormData();
+                dados.append('horario_id', horarioId);
+
+                fetch('remover_horario.php', {
+                    method: 'POST',
+                    body: dados
+                })
+                    .then(resposta => resposta.json())
+                    .then(resposta => {
+                        if (resposta.sucesso) {
+                            linha.remove();
+                        } else {
+                            alert('Erro: ' + resposta.erro);
+                            this.disabled = false;
+                            this.textContent = 'Remover';
+                        }
+                    });
+            });
         });
     </script>
 </body>

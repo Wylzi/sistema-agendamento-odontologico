@@ -7,6 +7,7 @@
     --cor-texto: #16302E;
     --cor-borda: #D8E3E2;
     --cor-texto-suave: #5B7371;
+    --cor-perigo: #C0392B;
 
     --fonte-titulo: 'Fraunces', serif;
     --fonte-corpo: 'IBM Plex Sans', sans-serif;
@@ -302,4 +303,57 @@ a:hover {
 .card h2 {
     margin: 0 0 4px;
     font-size: 1.15rem;
+}
+
+.horario-linha {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--cor-borda);
+}
+
+.horario-linha:last-child {
+    border-bottom: none;
+}
+
+.horario-linha-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.horario-linha-data {
+    font-family: var(--fonte-dado);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.horario-linha-clinica {
+    font-size: 0.82rem;
+    color: var(--cor-texto-suave);
+}
+
+.horario-linha-vagas {
+    font-size: 0.8rem;
+    color: var(--cor-texto-suave);
+    white-space: nowrap;
+}
+
+.btn-remover {
+    background: none;
+    border: none;
+    color: var(--cor-perigo);
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 4px 8px;
+    margin: 0;
+    width: auto;
+    cursor: pointer;
+}
+
+.btn-remover:hover {
+    text-decoration: underline;
+    opacity: 1;
 }

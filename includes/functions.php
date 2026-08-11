@@ -175,3 +175,52 @@ function diaSemanaAbreviado(string $dataIso): string
     $dt = DateTime::createFromFormat('Y-m-d', $dataIso);
     return $dias[(int) $dt->format('w')];
 }
+
+function listarMeusHorarios(int $dentistaId): array
+{
+    $pdo = getConexao();
+    $stmt = $pdo->prepare(
+        'SELECT h.id, h.data, h.hora, h.vagas_totais, h.vagas_ocupadas, c.nome AS clinica_nome
+         FROM horarios_disponiveis h
+         JOIN clinicas c ON c.id = h.clinica_id
+         WHERE h.dentista_id = :dentista_id
+           AND h.data >= CURDATE()
+         ORDER BY h.data, h.hora'
+    );
+    $stmt->execute(['dentista_id' => $dentistaId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function removerHorario(int $dentistaId, int $horarioId): array
+{
+    $pdo = getConexao();
+
+    try {
+        $pdo->beginTransaction();
+
+        $stmt = $pdo->prepare(
+            'SELECT id FROM horarios_disponiveis WHERE id = :id AND dentista_id = :dentista_id'
+        );
+        $stmt->execute(['id' => $horarioId, 'dentista_id' => $dentistaId]);
+
+        if (!$stmt->fetch()) {
+            $pdo->rollBack();
+            return ['sucesso' => false, 'erro' => 'Horário não encontrado.'];
+        }
+
+        $stmt = $pdo->prepare('DELETE FROM agendamentos WHERE horario_id = :horario_id');
+        $stmt->execute(['horario_id' => $horarioId]);
+
+        $stmt = $pdo->prepare(
+            'DELETE FROM horarios_disponiveis WHERE id = :id AND dentista_id = :dentista_id'
+        );
+        $stmt->execute(['id' => $horarioId, 'dentista_id' => $dentistaId]);
+
+        $pdo->commit();
+
+        return ['sucesso' => true];
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        return ['sucesso' => false, 'erro' => 'Erro ao remover horário.'];
+    }
+}
