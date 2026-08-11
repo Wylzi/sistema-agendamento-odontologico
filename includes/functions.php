@@ -121,3 +121,39 @@ function cadastrarHorario(int $dentistaId, int $clinicaId, string $data, string 
 
     return ['sucesso' => true, 'id' => (int) $pdo->lastInsertId()];
 }
+
+function listarAgendaDentista(int $dentistaId): array
+{
+    $pdo = getConexao();
+    $stmt = $pdo->prepare(
+        'SELECT a.id AS agendamento_id, a.ficha_numero,
+                h.data, h.hora,
+                c.nome AS clinica_nome
+         FROM agendamentos a
+         JOIN horarios_disponiveis h ON h.id = a.horario_id
+         JOIN clinicas c ON c.id = h.clinica_id
+         WHERE h.dentista_id = :dentista_id
+           AND h.data >= CURDATE()
+         ORDER BY h.data, h.hora'
+    );
+    $stmt->execute(['dentista_id' => $dentistaId]);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function formatarDataBr(string $dataIso): string
+{
+    $dt = DateTime::createFromFormat('Y-m-d', $dataIso);
+    return $dt->format('d/m/Y');
+}
+
+function diaDaSemanaBr(string $dataIso): string
+{
+    $dias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+    $dt = DateTime::createFromFormat('Y-m-d', $dataIso);
+    return $dias[(int) $dt->format('w')];
+}
+
+function formatarHoraBr(string $hora): string
+{
+    return substr($hora, 0, 5);
+}
