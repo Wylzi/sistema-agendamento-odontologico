@@ -224,3 +224,71 @@ function removerHorario(int $dentistaId, int $horarioId): array
         return ['sucesso' => false, 'erro' => 'Erro ao remover horário.'];
     }
 }
+
+function obterOuCriarTokenCalendario(int $dentistaId): string
+{
+    $pdo = getConexao();
+    $stmt = $pdo->prepare('SELECT token_calendario FROM dentistas WHERE id = :id');
+    $stmt->execute(['id' => $dentistaId]);
+    $token = $stmt->fetchColumn();
+
+    if ($token) {
+        return $token;
+    }
+
+    $novoToken = bin2hex(random_bytes(32));
+
+    $stmt = $pdo->prepare('UPDATE dentistas SET token_calendario = :token WHERE id = :id');
+    $stmt->execute(['token' => $novoToken, 'id' => $dentistaId]);
+
+    return $novoToken;
+}
+
+function escaparTextoIcs(string $texto): string
+{
+    return str_replace(['\\', ';', ',', "\n"], ['\\\\', '\\;', '\\,', '\\n'], $texto);
+}
+
+function gerarIcsAgenda(array $agenda, string $nomeDentista): string
+{
+    $fuso = new DateTimeZone('America/Sao_Paulo');
+    $utc = new DateTimeZone('UTC');
+
+    $linhas = [];
+    $linhas[] = 'BEGIN:VCALENDAR';
+    $linhas[] = 'VERSION:2.0';
+    $linhas[] = 'PRODID:-//Agendamento Odontologico//PT-BR';
+    $linhas[] = 'CALSCALE:GREGORIAN';
+    $linhas[] = 'METHOD:PUBLISH';
+    $linhas[] = 'X-WR-CALNAME:Agenda - ' . escaparTextoIcs($nomeDentista);
+
+    foreach ($agenda as $item) {
+        $inicio = DateTime::createFromFormat('Y-m-d H:i:s', $item['data'] . ' ' . $item['hora'], $fuso);
+        $fim = (clone $inicio)->modify('+2 hours');
+
+        $inicioUtc = (clone $inicio)->setTimezone($utc);
+        $fimUtc = (clone $fim)->setTimezone($utc);
+
+        $linhas[] = 'BEGIN:VEVENT';
+        $linhas[] = 'UID:agendamento-' . $item['agendamento_id'] . '@agendamento-odontologico';
+        $linhas[] = 'DTSTAMP:' . gmdate('Ymd\THis\Z');
+        $linhas[] = 'DTSTART:' . $inicioUtc->format('Ymd\THis\Z');
+        $linhas[] = 'DTEND:' . $fimUtc->format('Ymd\THis\Z');
+        $linhas[] = 'SUMMARY:' . escaparTextoIcs('Ficha ' . $item['ficha_numero']);
+        $linhas[] = 'LOCATION:' . escaparTextoIcs($item['clinica_nome']);
+        $linhas[] = 'END:VEVENT';
+    }
+
+    $linhas[] = 'END:VCALENDAR';
+
+    return implode("\r\n", $linhas);
+}
+
+function buscarDentistaPorTokenCalendario(string $token): ?array
+{
+    $pdo = getConexao();
+    $stmt = $pdo->prepare('SELECT id, nome FROM dentistas WHERE token_calendario = :token');
+    $stmt->execute(['token' => $token]);
+    $dentista = $stmt->fetch(PDO::FETCH_ASSOC);
+    return $dentista ?: null;
+}

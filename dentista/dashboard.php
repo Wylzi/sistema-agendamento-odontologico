@@ -3,6 +3,12 @@ require_once __DIR__ . '/../includes/auth.php';
 exigirLogin();
 
 $agenda = listarAgendaDentista($_SESSION['dentista_id']);
+$tokenCalendario = obterOuCriarTokenCalendario($_SESSION['dentista_id']);
+
+$dirAtual = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+$dirRaiz = dirname($dirAtual);
+$protocolo = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$urlCalendario = $protocolo . '://' . $_SERVER['HTTP_HOST'] . $dirRaiz . '/calendario.php?token=' . urlencode($tokenCalendario);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -45,6 +51,27 @@ $agenda = listarAgendaDentista($_SESSION['dentista_id']);
         <?php endforeach; ?>
     <?php endif; ?>
 
+    <div class="card">
+        <h2>Sincronizar com meu calendário</h2>
+        <p style="font-size:0.88rem;color:var(--cor-texto-suave);margin-bottom:12px;">
+            Adicione esse link uma vez no Google Calendar ou no Calendário do iPhone — ele atualiza sozinho conforme novos agendamentos chegarem.
+        </p>
+        <input type="text" readonly value="<?= htmlspecialchars($urlCalendario) ?>" onclick="this.select()">
+        <button type="button" id="btn-copiar-link">Copiar link</button>
+        <div id="area-copiado"></div>
+    </div>
+
     <p><a href="logout.php" class="link-sair">Sair</a></p>
+
+    <script>
+        document.getElementById('btn-copiar-link').addEventListener('click', function () {
+            const input = this.previousElementSibling;
+            const resultado = document.getElementById('area-copiado');
+
+            navigator.clipboard.writeText(input.value).then(() => {
+                resultado.innerHTML = '<p style="color:var(--cor-primaria);font-size:0.85rem;">Link copiado!</p>';
+            });
+        });
+    </script>
 </body>
 </html>
