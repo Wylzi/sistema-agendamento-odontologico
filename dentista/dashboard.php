@@ -96,6 +96,53 @@ $clinicas = listarClinicas();
                     }
                 });
         });
+
+        document.getElementById('btn-cadastrar').addEventListener('click', function () {
+            const clinicaId = document.getElementById('clinica_id').value;
+            const data = document.getElementById('data').value;
+            const hora = document.getElementById('hora').value;
+            const vagas = document.getElementById('vagas').value;
+            const resultado = document.getElementById('area-resultado-cadastro');
+            const botao = this;
+
+            if (!clinicaId) {
+                resultado.innerHTML = '<p>Selecione uma clínica.</p>';
+                return;
+            }
+
+            if (!data || !hora) {
+                resultado.innerHTML = '<p>Informe data e horário.</p>';
+                return;
+            }
+
+            botao.disabled = true;
+            botao.textContent = 'Salvando...';
+
+            const dados = new FormData();
+            dados.append('clinica_id', clinicaId);
+            dados.append('data', data);
+            dados.append('hora', hora);
+            dados.append('vagas', vagas);
+
+            fetch('cadastrar_horario.php', {
+                method: 'POST',
+                body: dados
+            })
+                .then(resposta => resposta.json())
+                .then(resposta => {
+                    botao.disabled = false;
+                    botao.textContent = 'Adicionar horário';
+
+                    if (resposta.sucesso) {
+                        resultado.innerHTML = '<p>Horário cadastrado!</p>';
+                        document.getElementById('data').value = '';
+                        document.getElementById('hora').value = '';
+                        document.getElementById('vagas').value = '1';
+                    } else {
+                        resultado.innerHTML = '<p>Erro: ' + resposta.erro + '</p>';
+                    }
+                });
+        });
     </script>
 </body>
 </html>

@@ -77,4 +77,47 @@ function criarAgendamento(int $horarioId, string $fichaNumero): array
         $pdo->rollBack();
         return ['sucesso' => false, 'erro' => 'Erro ao agendar.'];
     }
+
+}
+
+function cadastrarHorario(int $dentistaId, int $clinicaId, string $data, string $hora, int $vagas): array
+{
+    if (!$clinicaId) {
+        return ['sucesso' => false, 'erro' => 'Selecione uma clínica.'];
+    }
+
+    if ($data === '' || $hora === '') {
+        return ['sucesso' => false, 'erro' => 'Informe data e horário.'];
+    }
+
+    if ($data < date('Y-m-d')) {
+        return ['sucesso' => false, 'erro' => 'Não é possível cadastrar horário em data passada.'];
+    }
+
+    if ($vagas < 1) {
+        return ['sucesso' => false, 'erro' => 'Informe ao menos 1 vaga.'];
+    }
+
+    $pdo = getConexao();
+    $stmt = $pdo->prepare(
+        'INSERT INTO horarios_disponiveis (dentista_id, clinica_id, data, hora, vagas_totais)
+         VALUES (:dentista_id, :clinica_id, :data, :hora, :vagas)'
+    );
+
+    try {
+        $stmt->execute([
+            'dentista_id' => $dentistaId,
+            'clinica_id'  => $clinicaId,
+            'data'        => $data,
+            'hora'        => $hora,
+            'vagas'       => $vagas,
+        ]);
+    } catch (PDOException $e) {
+        if ($e->getCode() === '23000') {
+            return ['sucesso' => false, 'erro' => 'Você já tem um horário cadastrado nessa clínica, data e hora.'];
+        }
+        return ['sucesso' => false, 'erro' => 'Erro ao cadastrar horário.'];
+    }
+
+    return ['sucesso' => true, 'id' => (int) $pdo->lastInsertId()];
 }
