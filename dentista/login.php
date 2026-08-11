@@ -29,20 +29,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Login do Dentista</title>
 </head>
 <body>
-    <h1>Área do Dentista</h1>
+    <div class="tela-login">
+        <div class="card-login">
+            <h1>Área do Dentista</h1>
 
-    <?php if ($erro): ?>
-        <p><?= htmlspecialchars($erro) ?></p>
-    <?php endif; ?>
+            <?php if ($erro): ?>
+                <p><?= htmlspecialchars($erro) ?></p>
+            <?php endif; ?>
 
-    <form method="post" action="login.php">
-        <label for="email">E-mail</label><br>
-        <input type="email" name="email" id="email" required><br>
+            <form method="post" action="login.php">
+                <label for="email">E-mail</label>
+                <input type="email" name="email" id="email" required>
 
-        <label for="senha">Senha</label><br>
-        <input type="password" name="senha" id="senha" required><br>
+                <label for="senha">Senha</label>
+                <input type="password" name="senha" id="senha" required>
 
-        <button type="submit">Entrar</button>
-    </form>
+                <button type="submit">Entrar</button>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

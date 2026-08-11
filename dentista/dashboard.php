@@ -15,8 +15,8 @@ $agenda = listarAgendaDentista($_SESSION['dentista_id']);
 <body>
     <h1>Olá, <?= htmlspecialchars($_SESSION['dentista_nome']) ?></h1>
 
-    <nav>
-        <a href="dashboard.php">Ver agenda</a> |
+    <nav class="nav">
+        <a href="dashboard.php" class="ativo">Ver agenda</a>
         <a href="gerenciar.php">Cadastrar horários</a>
     </nav>
 
@@ -25,26 +25,23 @@ $agenda = listarAgendaDentista($_SESSION['dentista_id']);
     <?php if (empty($agenda)): ?>
         <p>Nenhum atendimento agendado ainda.</p>
     <?php else: ?>
-        <table border="1" cellpadding="8">
-            <tr>
-                <th>Dia</th>
-                <th>Data</th>
-                <th>Horário</th>
-                <th>Clínica</th>
-                <th>Ficha</th>
-            </tr>
-            <?php foreach ($agenda as $item): ?>
-                <tr>
-                    <td><?= htmlspecialchars(diaDaSemanaBr($item['data'])) ?></td>
-                    <td><?= htmlspecialchars(formatarDataBr($item['data'])) ?></td>
-                    <td><?= htmlspecialchars(formatarHoraBr($item['hora'])) ?></td>
-                    <td><?= htmlspecialchars($item['clinica_nome']) ?></td>
-                    <td><?= htmlspecialchars($item['ficha_numero']) ?></td>
-                </tr>
-            <?php endforeach; ?>
-        </table>
+        <?php foreach ($agenda as $item): ?>
+            <div class="agenda-item">
+                <div class="agenda-badge">
+                    <span class="agenda-badge-dia"><?= htmlspecialchars(diaDoMes($item['data'])) ?></span>
+                    <span class="agenda-badge-semana"><?= htmlspecialchars(diaSemanaAbreviado($item['data'])) ?></span>
+                </div>
+                <div class="agenda-info">
+                    <div class="agenda-linha-topo">
+                        <span class="agenda-hora"><?= htmlspecialchars(formatarHoraBr($item['hora'])) ?></span>
+                        <span class="agenda-ficha">Ficha <strong><?= htmlspecialchars($item['ficha_numero']) ?></strong></span>
+                    </div>
+                    <p class="agenda-clinica"><?= htmlspecialchars($item['clinica_nome']) ?></p>
+                </div>
+            </div>
+        <?php endforeach; ?>
     <?php endif; ?>
 
-    <p><a href="logout.php">Sair</a></p>
+    <p><a href="logout.php" class="link-sair">Sair</a></p>
 </body>
 </html>

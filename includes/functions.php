@@ -157,3 +157,16 @@ function formatarHoraBr(string $hora): string
 {
     return substr($hora, 0, 5);
 }
+
+function diaDoMes(string $dataIso): string
+{
+    $dt = DateTime::createFromFormat('Y-m-d', $dataIso);
+    return $dt->format('d');
+}
+
+function diaSemanaAbreviado(string $dataIso): string
+{
+    $dias = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sáb'];
+    $dt = DateTime::createFromFormat('Y-m-d', $dataIso);
+    return $dias[(int) $dt->format('w')];
+}

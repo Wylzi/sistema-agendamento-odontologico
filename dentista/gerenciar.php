@@ -15,9 +15,9 @@ $clinicas = listarClinicas();
 <body>
     <h1>Olá, <?= htmlspecialchars($_SESSION['dentista_nome']) ?></h1>
 
-    <nav>
-        <a href="dashboard.php">Ver agenda</a> |
-        <a href="gerenciar.php">Cadastrar horários</a>
+   <nav class="nav">
+        <a href="dashboard.php">Ver agenda</a>
+        <a href="gerenciar.php" class="ativo">Cadastrar horários</a>
     </nav>
 
     <h2>Cadastrar nova clínica</h2>
