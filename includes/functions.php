@@ -8,6 +8,22 @@ function listarClinicas(): array
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
+function cadastrarClinica(string $nome, ?string $endereco): array
+{
+    if (trim($nome) === '') {
+        return ['sucesso' => false, 'erro' => 'Informe o nome da clínica.'];
+    }
+
+    $pdo = getConexao();
+    $stmt = $pdo->prepare('INSERT INTO clinicas (nome, endereco) VALUES (:nome, :endereco)');
+    $stmt->execute([
+        'nome'     => trim($nome),
+        'endereco' => $endereco !== null && trim($endereco) !== '' ? trim($endereco) : null,
+    ]);
+
+    return ['sucesso' => true, 'id' => (int) $pdo->lastInsertId()];
+}
+
 function listarHorariosDisponiveis(int $clinicaId): array
 {
     $pdo = getConexao();
