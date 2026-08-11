@@ -9,5 +9,9 @@ function getConexao(): PDO
 {
     $dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=utf8mb4';
 
-    return new PDO($dsn, DB_USER, DB_PASS);
+    $opcoes = [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+    ];
+
+    return new PDO($dsn, DB_USER, DB_PASS, $opcoes);
 }

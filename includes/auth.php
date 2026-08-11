@@ -3,6 +3,8 @@ require_once __DIR__ . '/functions.php';
 
 session_start();
 
+const HASH_FALSO = '$2y$10$WaZCRVRqGVsScaAtH.K.2O27buNzQIMsfno6N/cB8G.ptdCw1cehu';
+
 function tentarLogin(string $email, string $senha): bool
 {
     $pdo = getConexao();
@@ -13,6 +15,11 @@ function tentarLogin(string $email, string $senha): bool
     $stmt->execute(['email' => $email]);
     $dentista = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    // Roda o password_verify() SEMPRE, exista o e-mail ou não —
+    // isso é o que equaliza o tempo de resposta nos dois casos.
+    $hashParaChecar = $dentista['senha_hash'] ?? HASH_FALSO;
+    $senhaCorreta = password_verify($senha, $hashParaChecar);
+
     if (!$dentista) {
         return false;
     }
@@ -22,7 +29,7 @@ function tentarLogin(string $email, string $senha): bool
         return false;
     }
 
-    if (password_verify($senha, $dentista['senha_hash'])) {
+    if ($senhaCorreta) {
         // Login certo: zera o contador e o bloqueio
         $stmt = $pdo->prepare(
             'UPDATE dentistas SET tentativas_falhas = 0, bloqueado_ate = NULL WHERE id = :id'

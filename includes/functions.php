@@ -39,6 +39,7 @@ function listarHorariosDisponiveis(int $clinicaId): array
     $stmt->execute(['clinica_id' => $clinicaId]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
 function criarAgendamento(int $horarioId, string $fichaNumero): array
 {
     $pdo = getConexao();
@@ -53,6 +54,11 @@ function criarAgendamento(int $horarioId, string $fichaNumero): array
         if (!$horario) {
             $pdo->rollBack();
             return ['sucesso' => false, 'erro' => 'Horário não encontrado.'];
+        }
+
+        if ($horario['data'] < date('Y-m-d')) {
+            $pdo->rollBack();
+            return ['sucesso' => false, 'erro' => 'Esse horário não está mais disponível.'];
         }
 
         if ($horario['vagas_ocupadas'] >= $horario['vagas_totais']) {
@@ -77,7 +83,6 @@ function criarAgendamento(int $horarioId, string $fichaNumero): array
         $pdo->rollBack();
         return ['sucesso' => false, 'erro' => 'Erro ao agendar.'];
     }
-
 }
 
 function cadastrarHorario(int $dentistaId, int $clinicaId, string $data, string $hora, int $vagas): array

@@ -8,6 +8,9 @@ $clinicas = listarClinicas();
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
     <link rel="stylesheet" href="../assets/css/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastrar Horários</title>
@@ -20,44 +23,46 @@ $clinicas = listarClinicas();
         <a href="gerenciar.php" class="ativo">Cadastrar horários</a>
     </nav>
 
-    <h2>Cadastrar nova clínica</h2>
+    <div class="card">
+        <h2>Cadastrar nova clínica</h2>
 
-    <label for="nome_clinica">Nome da clínica</label><br>
-    <input type="text" id="nome_clinica"><br>
+        <label for="nome_clinica">Nome da clínica</label>
+        <input type="text" id="nome_clinica">
 
-    <label for="endereco_clinica">Endereço (opcional)</label><br>
-    <input type="text" id="endereco_clinica"><br>
+        <label for="endereco_clinica">Endereço (opcional)</label>
+        <input type="text" id="endereco_clinica">
 
-    <button id="btn-cadastrar-clinica">Adicionar clínica</button>
+        <button id="btn-cadastrar-clinica">Adicionar clínica</button>
 
-    <div id="area-resultado-clinica"></div>
+        <div id="area-resultado-clinica"></div>
+    </div>
 
-    <hr>
+    <div class="card">
+        <h2>Cadastrar horário disponível</h2>
 
-    <h2>Cadastrar horário disponível</h2>
+        <label for="clinica_id">Clínica</label>
+        <select id="clinica_id">
+            <option value="">Selecione...</option>
+            <?php foreach ($clinicas as $c): ?>
+                <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['nome']) ?></option>
+            <?php endforeach; ?>
+        </select>
 
-    <label for="clinica_id">Clínica</label><br>
-    <select id="clinica_id">
-        <option value="">Selecione...</option>
-        <?php foreach ($clinicas as $c): ?>
-            <option value="<?= $c['id'] ?>"><?= htmlspecialchars($c['nome']) ?></option>
-        <?php endforeach; ?>
-    </select><br>
+        <label for="data">Data</label>
+        <input type="date" id="data">
 
-    <label for="data">Data</label><br>
-    <input type="date" id="data"><br>
+        <label for="hora">Horário</label>
+        <input type="time" id="hora">
 
-    <label for="hora">Horário</label><br>
-    <input type="time" id="hora"><br>
+        <label for="vagas">Vagas nesse horário</label>
+        <input type="number" id="vagas" min="1" value="1">
 
-    <label for="vagas">Vagas nesse horário</label><br>
-    <input type="number" id="vagas" min="1" value="1"><br>
+        <button id="btn-cadastrar">Adicionar horário</button>
 
-    <button id="btn-cadastrar">Adicionar horário</button>
+        <div id="area-resultado-cadastro"></div>
+    </div>
 
-    <div id="area-resultado-cadastro"></div>
-
-    <p><a href="logout.php">Sair</a></p>
+    <p><a href="logout.php" class="link-sair">Sair</a></p>
 
     <script>
         document.getElementById('btn-cadastrar-clinica').addEventListener('click', function () {
