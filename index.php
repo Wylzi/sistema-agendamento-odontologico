@@ -29,49 +29,85 @@ $clinicas = listarClinicas();
 
     <div id="area-resultado"></div>
 
-    <script>
-        document.getElementById('clinica_id').addEventListener('change', function () {
+   <script>
+        function formatarData(dataIso) {
+            const [ano, mes, dia] = dataIso.split('-');
+            return `${dia}/${mes}/${ano}`;
+        }
+
+        function diaDaSemana(dataIso) {
+            const dias = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+            const [ano, mes, dia] = dataIso.split('-').map(Number);
+            const data = new Date(ano, mes - 1, dia);
+            return dias[data.getDay()];
+        }
+
+        const selectClinica = document.getElementById('clinica_id');
+        const areaHorarios = document.getElementById('area-horarios');
+        const campoFicha = document.getElementById('ficha_numero');
+        const botaoConfirmar = document.getElementById('btn-confirmar');
+        const areaResultado = document.getElementById('area-resultado');
+
+        selectClinica.addEventListener('change', function () {
             const clinicaId = this.value;
-            const area = document.getElementById('area-horarios');
+
             if (!clinicaId) {
-                area.innerHTML = '';
+                areaHorarios.innerHTML = '';
                 return;
             }
+
+            areaHorarios.innerHTML = '<p>Carregando horários...</p>';
+
             fetch('horarios.php?clinica_id=' + clinicaId)
                 .then(resposta => resposta.json())
                 .then(horarios => {
                     if (horarios.length === 0) {
-                        area.innerHTML = '<p>Nenhum horário disponível nessa clínica.</p>';
+                        areaHorarios.innerHTML = '<p>Nenhum horário disponível nessa clínica.</p>';
                         return;
                     }
+
                     let html = '';
                     horarios.forEach(h => {
                         const vagasRestantes = h.vagas_totais - h.vagas_ocupadas;
                         html += `
                             <label>
                                 <input type="radio" name="horario_id" value="${h.id}">
-                                ${h.data} às ${h.hora} - ${h.dentista_nome} (${vagasRestantes} vagas)
+                                ${diaDaSemana(h.data)}, ${formatarData(h.data)} às ${h.hora} - ${h.dentista_nome} (${vagasRestantes} vagas)
                             </label><br>
                         `;
                     });
-                    area.innerHTML = html;
+                    areaHorarios.innerHTML = html;
                 });
         });
 
-        document.getElementById('btn-confirmar').addEventListener('click', function () {
+        // Reage quando o paciente escolhe (ou troca) um horário
+        areaHorarios.addEventListener('change', function (evento) {
+            if (evento.target.name !== 'horario_id') {
+                return;
+            }
+
+            // Se o botão estava travado por causa de um agendamento anterior, libera de novo
+            botaoConfirmar.disabled = false;
+            botaoConfirmar.textContent = 'Confirmar agendamento';
+            areaResultado.innerHTML = '';
+        });
+
+        botaoConfirmar.addEventListener('click', function () {
             const horarioSelecionado = document.querySelector('input[name="horario_id"]:checked');
-            const fichaNumero = document.getElementById('ficha_numero').value.trim();
-            const resultado = document.getElementById('area-resultado');
+            const fichaNumero = campoFicha.value.trim();
 
             if (!horarioSelecionado) {
-                resultado.innerHTML = '<p>Selecione um horário.</p>';
+                areaResultado.innerHTML = '<p>Selecione um horário.</p>';
                 return;
             }
 
             if (fichaNumero === '') {
-                resultado.innerHTML = '<p>Informe o número da ficha.</p>';
+                areaResultado.innerHTML = '<p>Informe o número da ficha.</p>';
                 return;
             }
+
+            botaoConfirmar.disabled = true;
+            botaoConfirmar.textContent = 'Enviando...';
 
             const dados = new FormData();
             dados.append('horario_id', horarioSelecionado.value);
@@ -84,9 +120,14 @@ $clinicas = listarClinicas();
                 .then(resposta => resposta.json())
                 .then(resultadoAgendamento => {
                     if (resultadoAgendamento.sucesso) {
-                        resultado.innerHTML = '<p>Consulta confirmada!</p>';
+                        areaResultado.innerHTML = '<p>Consulta confirmada!</p>';
+                        campoFicha.value = '';
+                        botaoConfirmar.textContent = 'Consulta confirmada';
+                        // botão permanece desabilitado até o paciente escolher outro horário
                     } else {
-                        resultado.innerHTML = '<p>Erro: ' + resultadoAgendamento.erro + '</p>';
+                        areaResultado.innerHTML = '<p>Erro: ' + resultadoAgendamento.erro + '</p>';
+                        botaoConfirmar.disabled = false;
+                        botaoConfirmar.textContent = 'Confirmar agendamento';
                     }
                 });
         });

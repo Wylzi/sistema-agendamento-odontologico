@@ -17,6 +17,7 @@ function listarHorariosDisponiveis(int $clinicaId): array
          JOIN dentistas d ON d.id = h.dentista_id
          WHERE h.clinica_id = :clinica_id
            AND h.vagas_ocupadas < h.vagas_totais
+           AND h.data >= CURDATE()
          ORDER BY h.data, h.hora'
     );
     $stmt->execute(['clinica_id' => $clinicaId]);
