@@ -276,3 +276,95 @@ h2 {
     color: var(--cinza-texto);
     text-decoration: none;
 }
+
+/* ===== Links de navegação ===== */
+.link-voltar {
+    display: inline-block;
+    color: var(--dourado);
+    text-decoration: none;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+}
+
+/* ===== Resumo da data no formulário ===== */
+.resumo-data {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.resumo-dia {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.resumo-hora {
+    font-size: 0.82rem;
+    color: var(--cinza-texto);
+    margin-top: 2px;
+}
+
+/* ===== Campo somente leitura ===== */
+.campo-fixo {
+    font-size: 0.95rem;
+    padding: 4px 0 2px;
+}
+
+/* ===== Linhas de dados (tela de confirmação) ===== */
+.linha-dado {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 14px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--borda);
+}
+
+.linha-dado:last-child {
+    border-bottom: none;
+}
+
+.linha-rotulo {
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cinza-claro);
+    white-space: nowrap;
+}
+
+.linha-valor {
+    font-size: 0.92rem;
+    text-align: right;
+}
+
+/* ===== Confirmação ===== */
+.confirmacao-topo {
+    text-align: center;
+}
+
+.confirmacao-icone {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--dourado-claro);
+    color: var(--dourado-escuro);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin: 0 auto 10px;
+}
+
+.confirmacao-topo h2 {
+    margin-bottom: 0;
+}
+
+/* ===== Chip de equipe (usado nas telas de admin/equipe) ===== */
+.chip-equipe {
+    font-size: 0.72rem;
+    background: var(--dourado-claro);
+    color: var(--dourado-escuro);
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+}

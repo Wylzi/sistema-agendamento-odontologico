@@ -188,3 +188,63 @@ function situacaoDaData(string $dataIso, array $excecoes, array $feriados): arra
 
     return ['disponivel' => true, 'motivo' => null];
 }
+
+/* ===================== Criar agendamento ===================== */
+
+function criarAgendamento(array $dados): array
+{
+    $pdo = getConexao();
+
+    try {
+        $pdo->beginTransaction();
+
+        // Trava as equipes já ocupadas nessa data para evitar corrida
+        $stmt = $pdo->prepare(
+            'SELECT equipe_id FROM agendamentos WHERE data = :data FOR UPDATE'
+        );
+        $stmt->execute(['data' => $dados['data']]);
+        $ocupadas = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        $stmt = $pdo->prepare('SELECT id FROM equipes WHERE ativo = 1 ORDER BY id');
+        $stmt->execute();
+        $todasEquipes = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        $livres = array_values(array_diff($todasEquipes, $ocupadas));
+
+        if (empty($livres)) {
+            $pdo->rollBack();
+            return ['sucesso' => false, 'erro' => 'Não há mais vagas nesta data.'];
+        }
+
+        $equipeId = $livres[0];
+
+        $stmt = $pdo->prepare(
+            'INSERT INTO agendamentos
+                (data, equipe_id, clinica_id, paciente_nome, ficha_numero, carga,
+                 dentista_operador, marcado_por_usuario_id, telefone_contato)
+             VALUES
+                (:data, :equipe_id, :clinica_id, :paciente_nome, :ficha_numero, :carga,
+                 :dentista_operador, :marcado_por, :telefone)'
+        );
+        $stmt->execute([
+            'data'              => $dados['data'],
+            'equipe_id'         => $equipeId,
+            'clinica_id'        => $dados['clinica_id'],
+            'paciente_nome'     => $dados['paciente_nome'],
+            'ficha_numero'      => $dados['ficha_numero'],
+            'carga'             => $dados['carga'],
+            'dentista_operador' => $dados['dentista_operador'],
+            'marcado_por'       => $dados['marcado_por'],
+            'telefone'          => $dados['telefone'] ?: null,
+        ]);
+
+        $novoId = (int) $pdo->lastInsertId();
+
+        $pdo->commit();
+
+        return ['sucesso' => true, 'id' => $novoId, 'equipe_id' => $equipeId];
+    } catch (Throwable $e) {
+        $pdo->rollBack();
+        return ['sucesso' => false, 'erro' => 'Erro ao salvar o agendamento.'];
+    }
+}
