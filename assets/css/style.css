@@ -480,10 +480,6 @@ h2 {
     font-size: 0.85rem;
 }
 
-.escondido {
-    display: none;
-}
-
 /* ===== Estado vazio ===== */
 .vazio {
     text-align: center;
@@ -492,6 +488,7 @@ h2 {
     padding: 12px 0;
 }
 
+/* ===== Área de texto ===== */
 textarea {
     width: 100%;
     padding: 11px 12px;
@@ -516,6 +513,7 @@ textarea:focus {
     margin-bottom: 8px;
 }
 
+/* ===== Listas de itens (clínicas, usuários) ===== */
 .linha-lista {
     display: flex;
     justify-content: space-between;
@@ -545,4 +543,40 @@ textarea:focus {
 
 .btn-perigo {
     color: var(--erro);
+}
+
+.tag-inativo {
+    font-size: 0.65rem;
+    background: #F2F2EE;
+    color: var(--cinza-texto);
+    padding: 2px 7px;
+    border-radius: 20px;
+    margin-left: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.acoes-usuario {
+    padding: 10px 0 14px;
+    border-bottom: 1px solid var(--borda);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.linha-acao {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.linha-acao input {
+    flex: 1;
+    padding: 8px 10px;
+    font-size: 0.85rem;
+}
+
+/* ===== Utilitário: precisa vir por último para vencer as demais regras ===== */
+.escondido {
+    display: none !important;
 }

@@ -421,3 +421,115 @@ function removerClinica(int $clinicaId): array
 
     return ['sucesso' => true];
 }
+
+/* ===================== Usuários ===================== */
+
+function listarUsuarios(): array
+{
+    $pdo = getConexao();
+    $stmt = $pdo->query(
+        'SELECT u.id, u.nome, u.usuario, u.tipo, u.ativo, u.precisa_trocar_senha,
+                c.nome AS clinica_nome, e.nome AS equipe_nome
+         FROM usuarios u
+         LEFT JOIN clinicas c ON c.id = u.clinica_id
+         LEFT JOIN equipes e ON e.id = u.equipe_id
+         ORDER BY u.tipo, u.nome'
+    );
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function cadastrarUsuario(array $dados): array
+{
+    $nome = trim($dados['nome'] ?? '');
+    $usuario = strtolower(trim($dados['usuario'] ?? ''));
+    $senha = $dados['senha'] ?? '';
+    $tipo = $dados['tipo'] ?? '';
+
+    if ($nome === '') {
+        return ['sucesso' => false, 'erro' => 'Informe o nome completo.'];
+    }
+
+    if (!preg_match('/^[a-z0-9._]{3,40}$/', $usuario)) {
+        return ['sucesso' => false, 'erro' => 'Usuário deve ter de 3 a 40 caracteres, usando apenas letras minúsculas, números, ponto e underline.'];
+    }
+
+    if (strlen($senha) < 6) {
+        return ['sucesso' => false, 'erro' => 'A senha inicial precisa ter pelo menos 6 caracteres.'];
+    }
+
+    if (!in_array($tipo, ['atendente', 'integrante', 'admin'], true)) {
+        return ['sucesso' => false, 'erro' => 'Tipo de acesso inválido.'];
+    }
+
+    $clinicaId = null;
+    $equipeId = null;
+
+    if ($tipo === 'atendente') {
+        $clinicaId = (int) ($dados['clinica_id'] ?? 0);
+        if (!$clinicaId) {
+            return ['sucesso' => false, 'erro' => 'Selecione a clínica da atendente.'];
+        }
+    } elseif ($tipo === 'integrante') {
+        $equipeId = (int) ($dados['equipe_id'] ?? 0);
+        if (!$equipeId) {
+            return ['sucesso' => false, 'erro' => 'Selecione a equipe.'];
+        }
+    }
+
+    $pdo = getConexao();
+
+    $stmt = $pdo->prepare('SELECT id FROM usuarios WHERE usuario = :usuario');
+    $stmt->execute(['usuario' => $usuario]);
+    if ($stmt->fetch()) {
+        return ['sucesso' => false, 'erro' => 'Esse nome de usuário já está em uso.'];
+    }
+
+    $stmt = $pdo->prepare(
+        'INSERT INTO usuarios (nome, usuario, senha_hash, tipo, clinica_id, equipe_id)
+         VALUES (:nome, :usuario, :senha_hash, :tipo, :clinica_id, :equipe_id)'
+    );
+    $stmt->execute([
+        'nome'       => $nome,
+        'usuario'    => $usuario,
+        'senha_hash' => password_hash($senha, PASSWORD_DEFAULT),
+        'tipo'       => $tipo,
+        'clinica_id' => $clinicaId,
+        'equipe_id'  => $equipeId,
+    ]);
+
+    return ['sucesso' => true, 'id' => (int) $pdo->lastInsertId()];
+}
+
+function redefinirSenhaUsuario(int $usuarioId, string $novaSenha): array
+{
+    if (strlen($novaSenha) < 6) {
+        return ['sucesso' => false, 'erro' => 'A senha precisa ter pelo menos 6 caracteres.'];
+    }
+
+    $pdo = getConexao();
+    $stmt = $pdo->prepare(
+        'UPDATE usuarios
+         SET senha_hash = :hash, precisa_trocar_senha = 1,
+             tentativas_falhas = 0, bloqueado_ate = NULL
+         WHERE id = :id'
+    );
+    $stmt->execute([
+        'hash' => password_hash($novaSenha, PASSWORD_DEFAULT),
+        'id'   => $usuarioId,
+    ]);
+
+    return ['sucesso' => true];
+}
+
+function alternarAtivoUsuario(int $usuarioId, int $adminLogadoId): array
+{
+    if ($usuarioId === $adminLogadoId) {
+        return ['sucesso' => false, 'erro' => 'Você não pode desativar a própria conta.'];
+    }
+
+    $pdo = getConexao();
+    $stmt = $pdo->prepare('UPDATE usuarios SET ativo = 1 - ativo WHERE id = :id');
+    $stmt->execute(['id' => $usuarioId]);
+
+    return ['sucesso' => true];
+}
