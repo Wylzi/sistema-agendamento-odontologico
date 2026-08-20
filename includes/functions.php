@@ -328,3 +328,96 @@ function trocarEquipeAgendamento(int $agendamentoId, int $novaEquipeId): array
         return ['sucesso' => false, 'erro' => 'Erro ao trocar a equipe.'];
     }
 }
+
+/* ===================== Cadastro de clínicas ===================== */
+
+function cadastrarClinica(string $nome, ?string $endereco = null): array
+{
+    $nome = trim($nome);
+
+    if ($nome === '') {
+        return ['sucesso' => false, 'erro' => 'Informe o nome da clínica.'];
+    }
+
+    $pdo = getConexao();
+
+    $stmt = $pdo->prepare('SELECT id FROM clinicas WHERE nome = :nome');
+    $stmt->execute(['nome' => $nome]);
+    if ($stmt->fetch()) {
+        return ['sucesso' => false, 'erro' => 'Já existe uma clínica com esse nome.'];
+    }
+
+    $endereco = $endereco !== null ? trim($endereco) : '';
+
+    $stmt = $pdo->prepare('INSERT INTO clinicas (nome, endereco) VALUES (:nome, :endereco)');
+    $stmt->execute([
+        'nome'     => $nome,
+        'endereco' => $endereco !== '' ? $endereco : null,
+    ]);
+
+    return ['sucesso' => true, 'id' => (int) $pdo->lastInsertId()];
+}
+
+/**
+ * Cadastra várias clínicas de uma vez, uma por linha.
+ * Aceita "Nome" ou "Nome; Endereço".
+ */
+function importarClinicas(string $texto): array
+{
+    $linhas = preg_split('/\r\n|\r|\n/', $texto);
+    $inseridas = 0;
+    $ignoradas = [];
+
+    foreach ($linhas as $linha) {
+        $linha = trim($linha);
+        if ($linha === '') {
+            continue;
+        }
+
+        $partes = explode(';', $linha, 2);
+        $nome = trim($partes[0]);
+        $endereco = isset($partes[1]) ? trim($partes[1]) : null;
+
+        $resultado = cadastrarClinica($nome, $endereco);
+        if ($resultado['sucesso']) {
+            $inseridas++;
+        } else {
+            $ignoradas[] = $nome;
+        }
+    }
+
+    return ['inseridas' => $inseridas, 'ignoradas' => $ignoradas];
+}
+
+function contarAtendentesDaClinica(int $clinicaId): int
+{
+    $pdo = getConexao();
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM usuarios WHERE clinica_id = :id');
+    $stmt->execute(['id' => $clinicaId]);
+    return (int) $stmt->fetchColumn();
+}
+
+function contarAgendamentosDaClinica(int $clinicaId): int
+{
+    $pdo = getConexao();
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM agendamentos WHERE clinica_id = :id');
+    $stmt->execute(['id' => $clinicaId]);
+    return (int) $stmt->fetchColumn();
+}
+
+function removerClinica(int $clinicaId): array
+{
+    if (contarAtendentesDaClinica($clinicaId) > 0) {
+        return ['sucesso' => false, 'erro' => 'Essa clínica tem atendentes vinculados.'];
+    }
+
+    if (contarAgendamentosDaClinica($clinicaId) > 0) {
+        return ['sucesso' => false, 'erro' => 'Essa clínica tem agendamentos registrados.'];
+    }
+
+    $pdo = getConexao();
+    $stmt = $pdo->prepare('DELETE FROM clinicas WHERE id = :id');
+    $stmt->execute(['id' => $clinicaId]);
+
+    return ['sucesso' => true];
+}

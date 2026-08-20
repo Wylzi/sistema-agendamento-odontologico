@@ -491,3 +491,58 @@ h2 {
     font-size: 0.9rem;
     padding: 12px 0;
 }
+
+textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--borda);
+    border-radius: 7px;
+    font-family: var(--fonte-corpo);
+    font-size: 0.95rem;
+    background: var(--branco);
+    color: var(--preto);
+    resize: vertical;
+}
+
+textarea:focus {
+    outline: 2px solid var(--dourado-claro);
+    outline-offset: 1px;
+    border-color: var(--dourado);
+}
+
+.texto-auxiliar {
+    font-size: 0.8rem;
+    color: var(--cinza-texto);
+    margin-bottom: 8px;
+}
+
+.linha-lista {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--borda);
+}
+
+.linha-lista:last-child {
+    border-bottom: none;
+}
+
+.linha-lista-info {
+    min-width: 0;
+}
+
+.linha-lista-titulo {
+    font-size: 0.92rem;
+}
+
+.linha-lista-sub {
+    font-size: 0.78rem;
+    color: var(--cinza-texto);
+    margin-top: 1px;
+}
+
+.btn-perigo {
+    color: var(--erro);
+}
