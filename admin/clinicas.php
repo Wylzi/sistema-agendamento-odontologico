@@ -6,6 +6,7 @@ $mensagem = null;
 $tipoMensagem = 'erro';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    exigirCsrfValido();
     $acao = $_POST['acao'] ?? '';
 
     if ($acao === 'cadastrar') {
@@ -56,6 +57,7 @@ require __DIR__ . '/_cabecalho.php';
 <div class="card">
     <h2>Nova clínica</h2>
     <form method="post" action="clinicas.php">
+        <?= campoCsrf() ?>
         <input type="hidden" name="acao" value="cadastrar">
 
         <label for="nome">Nome</label>
@@ -72,6 +74,7 @@ require __DIR__ . '/_cabecalho.php';
     <h2>Importar várias</h2>
     <p class="texto-auxiliar">Uma por linha. Para incluir o endereço, use ponto e vírgula: <em>Nome; Endereço</em></p>
     <form method="post" action="clinicas.php">
+        <?= campoCsrf() ?>
         <input type="hidden" name="acao" value="importar">
         <textarea name="lista" rows="6" required placeholder="Unidade Centro; Av. Central, 100&#10;Unidade Anápolis&#10;Unidade Rio Verde; Rua 7, 250"></textarea>
         <button type="submit">Importar lista</button>
@@ -93,6 +96,7 @@ require __DIR__ . '/_cabecalho.php';
                     <?php endif; ?>
                 </div>
                 <form method="post" action="clinicas.php" onsubmit="return confirm('Remover essa clínica?');">
+                    <?= campoCsrf() ?>
                     <input type="hidden" name="acao" value="remover">
                     <input type="hidden" name="clinica_id" value="<?= $c['id'] ?>">
                     <button type="submit" class="btn-texto btn-perigo">Remover</button>

@@ -6,6 +6,7 @@ $mensagem = null;
 $tipoMensagem = 'erro';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'trocar_equipe') {
+    exigirCsrfValido();
     $resultado = trocarEquipeAgendamento(
         (int) ($_POST['agendamento_id'] ?? 0),
         (int) ($_POST['equipe_id'] ?? 0)
@@ -87,6 +88,7 @@ require __DIR__ . '/_cabecalho.php';
                 </p>
 
                 <form method="post" action="agenda.php" id="troca-<?= $ag['id'] ?>" class="troca-equipe escondido">
+                    <?= campoCsrf() ?>
                     <input type="hidden" name="acao" value="trocar_equipe">
                     <input type="hidden" name="agendamento_id" value="<?= $ag['id'] ?>">
                     <select name="equipe_id" required>

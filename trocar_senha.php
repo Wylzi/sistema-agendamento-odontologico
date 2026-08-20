@@ -6,6 +6,8 @@ $erro = null;
 $sucesso = false;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    exigirCsrfValido();
+
     $novaSenha = $_POST['nova_senha'] ?? '';
     $confirmacao = $_POST['confirmacao'] ?? '';
 
@@ -58,6 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form method="post" action="trocar_senha.php">
+                <?= campoCsrf() ?>
+                
                 <label for="nova_senha">Nova senha</label>
                 <input type="password" name="nova_senha" id="nova_senha" required autocomplete="new-password">
 

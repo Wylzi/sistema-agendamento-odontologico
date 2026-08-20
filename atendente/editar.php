@@ -22,6 +22,7 @@ if ((int) $agendamento['cancelado'] === 1 || $agendamento['data'] < hojeIso()) {
 $erro = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    exigirCsrfValido();
     $acao = $_POST['acao'] ?? '';
 
     if ($acao === 'cancelar') {
@@ -98,6 +99,7 @@ $calParametrosExtras = ['id' => $id];
 
     <form method="post" action="editar.php" class="card">
         <h2>Editar agendamento</h2>
+        <?= campoCsrf() ?>
 
         <input type="hidden" name="acao" value="salvar">
         <input type="hidden" name="id" value="<?= $id ?>">
@@ -138,6 +140,7 @@ $calParametrosExtras = ['id' => $id];
 
         <form method="post" action="editar.php"
               onsubmit="return confirm('Confirma o cancelamento desse agendamento?');">
+            <?= campoCsrf() ?>
             <input type="hidden" name="acao" value="cancelar">
             <input type="hidden" name="id" value="<?= $id ?>">
 

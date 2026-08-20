@@ -6,6 +6,7 @@ $mensagem = null;
 $tipoMensagem = 'erro';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    exigirCsrfValido();
     $acao = $_POST['acao'] ?? '';
 
     if ($acao === 'cadastrar') {
@@ -70,6 +71,7 @@ require __DIR__ . '/_cabecalho.php';
 <div class="card">
     <h2>Novo usuário</h2>
     <form method="post" action="usuarios.php">
+        <?= campoCsrf() ?>
         <input type="hidden" name="acao" value="cadastrar">
 
         <label for="nome">Nome completo</label>
@@ -146,6 +148,7 @@ require __DIR__ . '/_cabecalho.php';
 
         <div id="acoes-<?= $u['id'] ?>" class="acoes-usuario escondido">
             <form method="post" action="usuarios.php" class="linha-acao">
+                <?= campoCsrf() ?>
                 <input type="hidden" name="acao" value="redefinir">
                 <input type="hidden" name="usuario_id" value="<?= $u['id'] ?>">
                 <input type="text" name="nova_senha" placeholder="Nova senha" required minlength="6">
@@ -154,6 +157,7 @@ require __DIR__ . '/_cabecalho.php';
 
             <form method="post" action="usuarios.php"
                   onsubmit="return confirm('<?= $u['ativo'] ? 'Desativar' : 'Reativar' ?> esse usuário?');">
+                <?= campoCsrf() ?>
                 <input type="hidden" name="acao" value="alternar_ativo">
                 <input type="hidden" name="usuario_id" value="<?= $u['id'] ?>">
                 <button type="submit" class="btn-texto <?= $u['ativo'] ? 'btn-perigo' : '' ?>">

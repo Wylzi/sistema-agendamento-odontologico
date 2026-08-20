@@ -37,6 +37,7 @@ if ($data < $hoje) {
 }
 
 if (!$bloqueado && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    exigirCsrfValido();
     $resultado = criarAgendamento([
         'data'              => $data,
         'clinica_id'        => (int) $_SESSION['clinica_id'],
@@ -88,6 +89,7 @@ if (!$bloqueado && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <?php if (!$bloqueado): ?>
         <form method="post" action="agendar.php" class="card">
+            <?= campoCsrf() ?>
             <input type="hidden" name="data" value="<?= htmlspecialchars($data) ?>">
 
             <label>Clínica</label>

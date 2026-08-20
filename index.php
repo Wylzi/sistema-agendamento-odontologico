@@ -9,6 +9,8 @@ if (estaLogado()) {
 $erro = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    exigirCsrfValido();
+
     $usuario = trim($_POST['usuario'] ?? '');
     $senha = $_POST['senha'] ?? '';
 
@@ -44,6 +46,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form method="post" action="index.php">
+                <?= campoCsrf() ?>
+
                 <label for="usuario">Usuário</label>
                 <input type="text" name="usuario" id="usuario" required autofocus autocomplete="username">
 

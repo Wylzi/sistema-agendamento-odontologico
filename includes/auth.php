@@ -106,3 +106,33 @@ function fazerLogout(): void
     $_SESSION = [];
     session_destroy();
 }
+
+/* ===================== Proteção CSRF ===================== */
+
+function tokenCsrf(): string
+{
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+/** Devolve o campo escondido pronto para inserir no formulário. */
+function campoCsrf(): string
+{
+    return '<input type="hidden" name="csrf_token" value="' . htmlspecialchars(tokenCsrf(), ENT_QUOTES) . '">';
+}
+
+/**
+ * Verifica o token enviado. Se não bater, interrompe a requisição.
+ * Deve ser chamada logo no início do tratamento de qualquer POST.
+ */
+function exigirCsrfValido(): void
+{
+    $enviado = $_POST['csrf_token'] ?? '';
+
+    if (!hash_equals(tokenCsrf(), $enviado)) {
+        http_response_code(419);
+        exit('Sessão expirada ou requisição inválida. Volte e tente novamente.');
+    }
+}

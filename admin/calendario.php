@@ -6,6 +6,7 @@ $mensagem = null;
 $tipoMensagem = 'erro';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    exigirCsrfValido();
     $acao = $_POST['acao'] ?? '';
 
     if ($acao === 'salvar') {
@@ -59,6 +60,7 @@ require __DIR__ . '/_cabecalho.php';
     </p>
 
     <form method="post" action="calendario.php">
+        <?= campoCsrf() ?>
         <input type="hidden" name="acao" value="salvar">
 
         <label for="data">Data</label>
@@ -98,6 +100,7 @@ require __DIR__ . '/_cabecalho.php';
                     </p>
                 </div>
                 <form method="post" action="calendario.php" onsubmit="return confirm('Remover essa exceção?');">
+                    <?= campoCsrf() ?>
                     <input type="hidden" name="acao" value="remover">
                     <input type="hidden" name="excecao_id" value="<?= $ex['id'] ?>">
                     <button type="submit" class="btn-texto btn-perigo">Remover</button>
