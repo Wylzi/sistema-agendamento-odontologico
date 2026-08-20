@@ -1,13 +1,14 @@
-
 :root {
-    --cor-primaria: #0E6E6B;
-    --cor-primaria-clara: #E1F0EF;
-    --cor-destaque: #FF6B4A;
-    --cor-fundo: #F7F9F9;
-    --cor-texto: #16302E;
-    --cor-borda: #D8E3E2;
-    --cor-texto-suave: #5B7371;
-    --cor-perigo: #C0392B;
+    --dourado: #C9A227;
+    --dourado-claro: #FBF6E6;
+    --dourado-escuro: #A8871F;
+    --preto: #1A1A1A;
+    --fundo: #FAFAF8;
+    --branco: #FFFFFF;
+    --cinza-texto: #8A8A85;
+    --cinza-claro: #A0A09A;
+    --borda: #E8E6E0;
+    --erro: #C0392B;
 
     --fonte-titulo: 'Fraunces', serif;
     --fonte-corpo: 'IBM Plex Sans', sans-serif;
@@ -22,141 +23,42 @@
 
 body {
     font-family: var(--fonte-corpo);
-    background: var(--cor-fundo);
-    color: var(--cor-texto);
+    background: var(--fundo);
+    color: var(--preto);
     line-height: 1.5;
     padding: 20px;
     max-width: 480px;
     margin: 0 auto;
 }
 
-h1, h2 {
-    font-family: var(--fonte-titulo);
+/* ===== Marca ===== */
+.marca {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.marca-sorria {
+    font-size: 1.6rem;
     font-weight: 700;
-    line-height: 1.2;
+    font-style: italic;
+    color: var(--dourado);
 }
 
-h1 {
-    font-size: 1.8rem;
-    margin-bottom: 4px;
+.marca-goias {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--preto);
 }
 
-h2 {
-    font-size: 1.3rem;
-    margin: 24px 0 12px;
+.marca-sub {
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--cinza-texto);
+    margin-top: 2px;
 }
 
-label {
-    display: block;
-    font-weight: 500;
-    margin: 14px 0 6px;
-    font-size: 0.9rem;
-}
-
-input, select {
-    width: 100%;
-    max-width: 400px;
-    padding: 10px 12px;
-    border: 1px solid var(--cor-borda);
-    border-radius: 6px;
-    font-family: var(--fonte-corpo);
-    font-size: 1rem;
-    background: white;
-}
-
-input:focus, select:focus {
-    outline: none;
-    border-color: var(--cor-primaria);
-}
-
-button {
-    display: block;
-    width: 100%;
-    max-width: 400px;
-    background: var(--cor-destaque);
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 6px;
-    font-family: var(--fonte-corpo);
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    margin-top: 16px;
-}
-
-button:hover {
-    opacity: 0.9;
-}
-
-button:disabled {
-    background: var(--cor-borda);
-    color: var(--cor-texto);
-    cursor: not-allowed;
-    opacity: 0.7;
-}
-
-.grupo-dia {
-    margin: 20px 0 8px;
-}
-
-.grupo-dia:first-child {
-    margin-top: 0;
-}
-
-.dia-semana {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--cor-texto);
-    margin: 0;
-}
-
-.data-numero {
-    font-size: 0.85rem;
-    color: var(--cor-texto-suave);
-    margin: 2px 0 0;
-}
-
-.horario-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    background: white;
-    border: 1px solid var(--cor-borda);
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin-bottom: 8px;
-    cursor: pointer;
-}
-
-.horario-card.selecionado {
-    border: 2px solid var(--cor-primaria);
-    padding: 11px 13px;
-}
-
-.horario-card-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.horario-hora {
-    font-family: var(--fonte-dado);
-    font-size: 1rem;
-    font-weight: 500;
-}
-
-.chip-vagas {
-    font-size: 0.78rem;
-    background: var(--cor-fundo);
-    color: var(--cor-texto-suave);
-    padding: 3px 10px;
-    border-radius: 20px;
-    border: 1px solid var(--cor-borda);
-    white-space: nowrap;
-}
-
+/* ===== Tela de login ===== */
 .tela-login {
     min-height: 80vh;
     display: flex;
@@ -165,195 +67,212 @@ button:disabled {
 }
 
 .card-login {
-    background: white;
-    border: 1px solid var(--cor-borda);
+    background: var(--branco);
+    border: 1px solid var(--borda);
     border-radius: 12px;
-    padding: 28px 24px;
+    padding: 24px;
 }
 
-.card-login h1 {
-    text-align: center;
-    margin-bottom: 24px;
+/* ===== Formulários ===== */
+label {
+    display: block;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cinza-claro);
+    margin: 14px 0 6px;
 }
 
-.agenda-item {
-    display: flex;
-    gap: 12px;
-    background: white;
-    border: 1px solid var(--cor-borda);
-    border-radius: 10px;
-    padding: 12px;
+input, select {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--borda);
+    border-radius: 7px;
+    font-family: var(--fonte-corpo);
+    font-size: 1rem;
+    background: var(--branco);
+    color: var(--preto);
+}
+
+input:focus, select:focus {
+    outline: 2px solid var(--dourado-claro);
+    outline-offset: 1px;
+    border-color: var(--dourado);
+}
+
+button {
+    display: block;
+    width: 100%;
+    background: var(--preto);
+    color: var(--branco);
+    border: none;
+    padding: 13px 20px;
+    border-radius: 8px;
+    font-family: var(--fonte-corpo);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    opacity: 0.88;
+}
+
+button:disabled {
+    background: var(--borda);
+    color: var(--cinza-texto);
+    cursor: not-allowed;
+}
+
+.btn-dourado {
+    background: var(--dourado);
+}
+
+/* ===== Alertas ===== */
+.alerta-erro {
+    background: #FDEDEA;
+    border: 1px solid #F5C6C0;
+    color: var(--erro);
+    padding: 10px 12px;
+    border-radius: 7px;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+}
+
+.alerta-sucesso {
+    background: var(--dourado-claro);
+    border: 1px solid #EFE2B8;
+    color: var(--dourado-escuro);
+    padding: 10px 12px;
+    border-radius: 7px;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+}
+
+/* ===== Cards genéricos ===== */
+.card {
+    background: var(--branco);
+    border: 1px solid var(--borda);
+    border-radius: 11px;
+    padding: 16px;
+    margin-bottom: 14px;
+}
+
+h1 {
+    font-family: var(--fonte-titulo);
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+h2 {
+    font-family: var(--fonte-titulo);
+    font-size: 1.1rem;
+    font-weight: 600;
     margin-bottom: 10px;
 }
 
-.agenda-badge {
-    background: var(--cor-primaria-clara);
+/* ===== Contexto do usuário ===== */
+.contexto-usuario {
+    font-size: 0.82rem;
+    color: var(--cinza-texto);
+    text-align: center;
+    margin-bottom: 18px;
+}
+
+/* ===== Calendário ===== */
+.calendario-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.calendario-nav span {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.calendario-nav a {
+    color: var(--dourado);
+    text-decoration: none;
+    font-size: 1.4rem;
+    line-height: 1;
+    padding: 0 10px;
+}
+
+.calendario-semana {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-bottom: 6px;
+}
+
+.calendario-semana span {
+    text-align: center;
+    font-size: 0.68rem;
+    color: var(--cinza-claro);
+}
+
+.calendario-grade {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.dia {
+    aspect-ratio: 1;
     border-radius: 8px;
-    width: 52px;
-    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 6px 0;
-}
-
-.agenda-badge-dia {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--cor-primaria);
-    line-height: 1;
-}
-
-.agenda-badge-semana {
-    font-size: 0.65rem;
-    color: var(--cor-primaria);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-top: 2px;
-}
-
-.agenda-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.agenda-linha-topo {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-}
-
-.agenda-hora {
-    font-family: var(--fonte-dado);
-    font-size: 1.05rem;
-    font-weight: 500;
-}
-
-.agenda-ficha {
-    font-size: 0.78rem;
-    color: var(--cor-texto-suave);
-}
-
-.agenda-ficha strong {
-    font-family: var(--fonte-dado);
-    color: var(--cor-texto);
-    font-weight: 500;
-}
-
-.agenda-clinica {
-    font-size: 0.85rem;
-    color: var(--cor-texto-suave);
-    margin: 4px 0 0;
-}
-
-a {
-    color: var(--cor-primaria);
     text-decoration: none;
-    font-weight: 500;
+    gap: 1px;
 }
 
-a:hover {
-    text-decoration: underline;
-}
-
-.nav {
-    display: flex;
-    gap: 8px;
-    margin: 16px 0 24px;
-    border-bottom: 1px solid var(--cor-borda);
-    padding-bottom: 12px;
-}
-
-.nav a {
-    padding: 6px 14px;
-    border-radius: 20px;
+.dia-numero {
     font-size: 0.9rem;
-    color: var(--cor-texto-suave);
+    color: var(--preto);
 }
 
-.nav a:hover {
-    text-decoration: none;
-    background: var(--cor-fundo);
+.dia-status {
+    font-size: 0.55rem;
+    line-height: 1.1;
+    text-align: center;
 }
 
-.nav a.ativo {
-    background: var(--cor-primaria-clara);
-    color: var(--cor-primaria);
-    font-weight: 600;
+.dia-livre {
+    background: var(--branco);
+    border: 1px solid var(--borda);
 }
 
+.dia-livre .dia-status {
+    color: var(--dourado);
+}
+
+.dia-livre:hover {
+    border-color: var(--dourado);
+}
+
+.dia-indisponivel {
+    background: #F2F2EE;
+    border: 1px solid var(--borda);
+    opacity: 0.55;
+}
+
+.dia-indisponivel .dia-numero,
+.dia-indisponivel .dia-status {
+    color: var(--cinza-texto);
+}
+
+/* ===== Link sair ===== */
 .link-sair {
     display: block;
     text-align: center;
     margin-top: 24px;
     font-size: 0.85rem;
-    color: var(--cor-texto-suave);
-    font-weight: 400;
-}
-
-.card {
-    background: white;
-    border: 1px solid var(--cor-borda);
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 20px;
-}
-
-.card h2 {
-    margin: 0 0 4px;
-    font-size: 1.15rem;
-}
-
-.horario-linha {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 10px 0;
-    border-bottom: 1px solid var(--cor-borda);
-}
-
-.horario-linha:last-child {
-    border-bottom: none;
-}
-
-.horario-linha-info {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-}
-
-.horario-linha-data {
-    font-family: var(--fonte-dado);
-    font-size: 0.9rem;
-    font-weight: 500;
-}
-
-.horario-linha-clinica {
-    font-size: 0.82rem;
-    color: var(--cor-texto-suave);
-}
-
-.horario-linha-vagas {
-    font-size: 0.8rem;
-    color: var(--cor-texto-suave);
-    white-space: nowrap;
-}
-
-.btn-remover {
-    background: none;
-    border: none;
-    color: var(--cor-perigo);
-    font-size: 0.85rem;
-    font-weight: 500;
-    padding: 4px 8px;
-    margin: 0;
-    width: auto;
-    cursor: pointer;
-}
-
-.btn-remover:hover {
-    text-decoration: underline;
-    opacity: 1;
+    color: var(--cinza-texto);
+    text-decoration: none;
 }
