@@ -3,7 +3,7 @@ require_once __DIR__ . '/../includes/auth.php';
 exigirTipo('integrante');
 
 $equipeId = (int) $_SESSION['equipe_id'];
-$agendamentos = listarAgendamentos($equipeId);
+$agendamentos = listarAgendamentos(['equipe_id' => $equipeId]);;$agendamentos = listarAgendamentos(['equipe_id' => $equipeId]);
 
 $cargaLabel = ['superior' => 'Superior', 'inferior' => 'Inferior', 'ambas' => 'Ambas'];
 

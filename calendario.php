@@ -19,7 +19,7 @@ if ($usuario['tipo'] === 'admin') {
     $agenda = listarAgendamentos();
     $nomeCalendario = 'Protocolo Fast — Todas as equipes';
 } elseif ($usuario['tipo'] === 'integrante') {
-    $agenda = listarAgendamentos((int) $usuario['equipe_id']);
+    $agenda = listarAgendamentos(['equipe_id' => (int) $usuario['equipe_id']]);
     $nomeCalendario = 'Protocolo Fast — ' . $usuario['nome'];
 } else {
     http_response_code(403);
