@@ -11,6 +11,12 @@ $pdo = getConexao();
 $stmt = $pdo->prepare('SELECT nome FROM equipes WHERE id = :id');
 $stmt->execute(['id' => $equipeId]);
 $nomeEquipe = $stmt->fetchColumn() ?: 'Equipe';
+$tokenCalendario = obterOuCriarTokenCalendario((int) $_SESSION['usuario_id']);
+
+$dirAtual = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+$dirRaiz = dirname($dirAtual);
+$protocolo = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$urlCalendario = $protocolo . '://' . $_SERVER['HTTP_HOST'] . $dirRaiz . '/calendario.php?token=' . urlencode($tokenCalendario);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -56,6 +62,24 @@ $nomeEquipe = $stmt->fetchColumn() ?: 'Equipe';
             </div>
         <?php endforeach; ?>
     <?php endif; ?>
+
+        <div class="card">
+        <h2>Sincronizar com meu celular</h2>
+        <p class="texto-auxiliar">Adicione esse link uma vez no Google Agenda ou no Calendário do iPhone — ele atualiza sozinho.</p>
+        <input type="text" readonly value="<?= htmlspecialchars($urlCalendario) ?>" onclick="this.select()">
+        <button type="button" id="btn-copiar">Copiar link</button>
+        <div id="area-copiado"></div>
+    </div>
+
+    <script>
+        document.getElementById('btn-copiar').addEventListener('click', function () {
+            const input = this.previousElementSibling;
+            navigator.clipboard.writeText(input.value).then(() => {
+                document.getElementById('area-copiado').innerHTML =
+                    '<p class="texto-copiado">Link copiado!</p>';
+            });
+        });
+    </script>
 
     <p><a href="../logout.php" class="link-sair">Sair</a></p>
 </body>

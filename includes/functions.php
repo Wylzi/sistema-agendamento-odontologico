@@ -533,3 +533,81 @@ function alternarAtivoUsuario(int $usuarioId, int $adminLogadoId): array
 
     return ['sucesso' => true];
 }
+
+/* ===================== Exportação de calendário (.ics) ===================== */
+
+function obterOuCriarTokenCalendario(int $usuarioId): string
+{
+    $pdo = getConexao();
+    $stmt = $pdo->prepare('SELECT token_calendario FROM usuarios WHERE id = :id');
+    $stmt->execute(['id' => $usuarioId]);
+    $token = $stmt->fetchColumn();
+
+    if ($token) {
+        return $token;
+    }
+
+    $novoToken = bin2hex(random_bytes(32));
+
+    $stmt = $pdo->prepare('UPDATE usuarios SET token_calendario = :token WHERE id = :id');
+    $stmt->execute(['token' => $novoToken, 'id' => $usuarioId]);
+
+    return $novoToken;
+}
+
+function buscarUsuarioPorTokenCalendario(string $token): ?array
+{
+    $pdo = getConexao();
+    $stmt = $pdo->prepare(
+        'SELECT id, nome, tipo, equipe_id FROM usuarios
+         WHERE token_calendario = :token AND ativo = 1'
+    );
+    $stmt->execute(['token' => $token]);
+    return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+}
+
+function escaparTextoIcs(string $texto): string
+{
+    return str_replace(['\\', ';', ',', "\n"], ['\\\\', '\\;', '\\,', '\\n'], $texto);
+}
+
+function gerarIcsAgenda(array $agenda, string $nomeCalendario): string
+{
+    $fuso = new DateTimeZone('America/Sao_Paulo');
+    $utc = new DateTimeZone('UTC');
+    $cargaLabel = ['superior' => 'Superior', 'inferior' => 'Inferior', 'ambas' => 'Ambas'];
+
+    $linhas = [];
+    $linhas[] = 'BEGIN:VCALENDAR';
+    $linhas[] = 'VERSION:2.0';
+    $linhas[] = 'PRODID:-//Protocolo Fast//PT-BR';
+    $linhas[] = 'CALSCALE:GREGORIAN';
+    $linhas[] = 'METHOD:PUBLISH';
+    $linhas[] = 'X-WR-CALNAME:' . escaparTextoIcs($nomeCalendario);
+
+    foreach ($agenda as $item) {
+        $inicio = DateTime::createFromFormat('Y-m-d H:i:s', $item['data'] . ' 08:00:00', $fuso);
+        $fim = (clone $inicio)->modify('+2 hours');
+
+        $inicioUtc = (clone $inicio)->setTimezone($utc);
+        $fimUtc = (clone $fim)->setTimezone($utc);
+
+        $descricao = 'Ficha ' . $item['ficha_numero']
+            . ' | Carga ' . ($cargaLabel[$item['carga']] ?? '')
+            . ' | Opera: ' . $item['dentista_operador'];
+
+        $linhas[] = 'BEGIN:VEVENT';
+        $linhas[] = 'UID:agendamento-' . $item['id'] . '@protocolo-fast';
+        $linhas[] = 'DTSTAMP:' . gmdate('Ymd\THis\Z');
+        $linhas[] = 'DTSTART:' . $inicioUtc->format('Ymd\THis\Z');
+        $linhas[] = 'DTEND:' . $fimUtc->format('Ymd\THis\Z');
+        $linhas[] = 'SUMMARY:' . escaparTextoIcs($item['paciente_nome'] . ' — ' . $item['equipe_nome']);
+        $linhas[] = 'LOCATION:' . escaparTextoIcs($item['clinica_nome']);
+        $linhas[] = 'DESCRIPTION:' . escaparTextoIcs($descricao);
+        $linhas[] = 'END:VEVENT';
+    }
+
+    $linhas[] = 'END:VCALENDAR';
+
+    return implode("\r\n", $linhas);
+}

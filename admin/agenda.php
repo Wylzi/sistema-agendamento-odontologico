@@ -11,12 +11,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'trocar_
         (int) ($_POST['equipe_id'] ?? 0)
     );
 
-    if ($resultado['sucesso']) {
-        $mensagem = 'Equipe alterada.';
-        $tipoMensagem = 'sucesso';
-    } else {
-        $mensagem = $resultado['erro'];
-    }
+    $_SESSION['flash'] = $resultado['sucesso']
+        ? ['texto' => 'Equipe alterada.', 'tipo' => 'sucesso']
+        : ['texto' => $resultado['erro'], 'tipo' => 'erro'];
+
+    header('Location: agenda.php');
+    exit;
+}
+
+if (isset($_SESSION['flash'])) {
+    $mensagem = $_SESSION['flash']['texto'];
+    $tipoMensagem = $_SESSION['flash']['tipo'];
+    unset($_SESSION['flash']);
 }
 
 $agendamentos = listarAgendamentos();
@@ -28,6 +34,13 @@ $porData = [];
 foreach ($agendamentos as $ag) {
     $porData[$ag['data']][] = $ag;
 }
+
+$tokenCalendario = obterOuCriarTokenCalendario((int) $_SESSION['usuario_id']);
+
+$dirAtual = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+$dirRaiz = dirname($dirAtual);
+$protocolo = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+$urlCalendario = $protocolo . '://' . $_SERVER['HTTP_HOST'] . $dirRaiz . '/calendario.php?token=' . urlencode($tokenCalendario);
 
 $tituloPagina = 'Agenda — Protocolo Fast';
 require __DIR__ . '/_cabecalho.php';
@@ -89,5 +102,23 @@ require __DIR__ . '/_cabecalho.php';
         <?php endforeach; ?>
     <?php endforeach; ?>
 <?php endif; ?>
+
+<div class="card">
+    <h2>Sincronizar agenda geral</h2>
+    <p class="texto-auxiliar">Adicione esse link uma vez no Google Agenda ou no Calendário do iPhone — ele atualiza sozinho.</p>
+    <input type="text" readonly value="<?= htmlspecialchars($urlCalendario) ?>" onclick="this.select()">
+    <button type="button" id="btn-copiar">Copiar link</button>
+    <div id="area-copiado"></div>
+</div>
+
+<script>
+    document.getElementById('btn-copiar').addEventListener('click', function () {
+        const input = this.previousElementSibling;
+        navigator.clipboard.writeText(input.value).then(() => {
+            document.getElementById('area-copiado').innerHTML =
+                '<p class="texto-copiado">Link copiado!</p>';
+        });
+    });
+</script>
 
 <?php require __DIR__ . '/_rodape.php'; ?>

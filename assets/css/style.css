@@ -609,6 +609,12 @@ textarea:focus {
     font-size: 0.9rem;
 }
 
+.texto-copiado {
+    color: var(--dourado-escuro);
+    font-size: 0.82rem;
+    margin-top: 8px;
+}
+
 /* ===== Utilitário: precisa vir por último para vencer as demais regras ===== */
 .escondido {
     display: none !important;

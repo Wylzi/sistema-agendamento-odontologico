@@ -5,18 +5,28 @@ $token = $_GET['token'] ?? '';
 
 if ($token === '') {
     http_response_code(400);
-    exit('Token não informado.');
+    exit('Token nao informado.');
 }
 
-$dentista = buscarDentistaPorTokenCalendario($token);
+$usuario = buscarUsuarioPorTokenCalendario($token);
 
-if (!$dentista) {
+if (!$usuario) {
     http_response_code(404);
-    exit('Token inválido.');
+    exit('Token invalido.');
 }
 
-$agenda = listarAgendaDentista($dentista['id']);
-$ics = gerarIcsAgenda($agenda, $dentista['nome']);
+if ($usuario['tipo'] === 'admin') {
+    $agenda = listarAgendamentos();
+    $nomeCalendario = 'Protocolo Fast — Todas as equipes';
+} elseif ($usuario['tipo'] === 'integrante') {
+    $agenda = listarAgendamentos((int) $usuario['equipe_id']);
+    $nomeCalendario = 'Protocolo Fast — ' . $usuario['nome'];
+} else {
+    http_response_code(403);
+    exit('Esse perfil nao tem calendario.');
+}
+
+$ics = gerarIcsAgenda($agenda, $nomeCalendario);
 
 header('Content-Type: text/calendar; charset=utf-8');
 header('Content-Disposition: inline; filename="agenda.ics"');
