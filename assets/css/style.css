@@ -615,6 +615,73 @@ textarea:focus {
     margin-top: 8px;
 }
 
+.card-cancelado {
+    opacity: 0.6;
+}
+
+.tag-cancelado {
+    font-size: 0.65rem;
+    background: #FDEDEA;
+    color: var(--erro);
+    padding: 3px 9px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.acoes-agendamento {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--borda);
+}
+
+.link-acao {
+    color: var(--dourado);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 500;
+}
+
+.filtro-linha {
+    margin-bottom: 4px;
+}
+
+.btn-cancelar {
+    background: var(--erro);
+}
+
+.dia-selecionado {
+    background: var(--dourado) !important;
+    border-color: var(--dourado) !important;
+}
+
+.dia-selecionado .dia-numero,
+.dia-selecionado .dia-status {
+    color: var(--branco);
+    font-weight: 600;
+}
+
+/* Neutraliza os estilos genéricos de label quando ele é um dia do calendário */
+label.dia {
+    margin: 0;
+    padding: 0;
+    font-size: inherit;
+    letter-spacing: normal;
+    text-transform: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+label.dia .dia-status {
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+/* Impede que o calendário embutido no formulário estoure a largura */
+.card .calendario-grade,
+.card .calendario-semana {
+    max-width: 100%;
+}
 /* ===== Utilitário: precisa vir por último para vencer as demais regras ===== */
 .escondido {
     display: none !important;
