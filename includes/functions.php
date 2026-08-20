@@ -876,3 +876,67 @@ function registrarErro(string $contexto, Throwable $e): void
 {
     error_log('[Protocolo Fast] ' . $contexto . ': ' . $e->getMessage() . ' em ' . $e->getFile() . ':' . $e->getLine());
 }
+
+/* ===================== Histórico ===================== */
+
+/**
+ * Busca agendamentos com filtros. Opções:
+ *   busca, data_inicio, data_fim, clinica_id, equipe_id,
+ *   situacao ('todos' | 'ativos' | 'cancelados')
+ */
+function buscarHistorico(array $filtros = []): array
+{
+    $pdo = getConexao();
+
+    $sql =
+        'SELECT a.id, a.data, a.paciente_nome, a.ficha_numero, a.carga,
+                a.dentista_operador, a.telefone_contato, a.cancelado,
+                a.motivo_cancelamento, a.criado_em,
+                c.nome AS clinica_nome,
+                e.nome AS equipe_nome,
+                u.nome AS marcado_por
+         FROM agendamentos a
+         JOIN clinicas c ON c.id = a.clinica_id
+         JOIN equipes e ON e.id = a.equipe_id
+         JOIN usuarios u ON u.id = a.marcado_por_usuario_id
+         WHERE 1 = 1';
+
+    $parametros = [];
+
+    if (!empty($filtros['busca'])) {
+        $sql .= ' AND (a.paciente_nome LIKE :busca OR a.ficha_numero LIKE :busca)';
+        $parametros['busca'] = '%' . $filtros['busca'] . '%';
+    }
+
+    if (!empty($filtros['data_inicio'])) {
+        $sql .= ' AND a.data >= :data_inicio';
+        $parametros['data_inicio'] = $filtros['data_inicio'];
+    }
+
+    if (!empty($filtros['data_fim'])) {
+        $sql .= ' AND a.data <= :data_fim';
+        $parametros['data_fim'] = $filtros['data_fim'];
+    }
+
+    if (!empty($filtros['clinica_id'])) {
+        $sql .= ' AND a.clinica_id = :clinica_id';
+        $parametros['clinica_id'] = $filtros['clinica_id'];
+    }
+
+    if (!empty($filtros['equipe_id'])) {
+        $sql .= ' AND a.equipe_id = :equipe_id';
+        $parametros['equipe_id'] = $filtros['equipe_id'];
+    }
+
+    if (($filtros['situacao'] ?? 'todos') === 'ativos') {
+        $sql .= ' AND a.cancelado = 0';
+    } elseif (($filtros['situacao'] ?? '') === 'cancelados') {
+        $sql .= ' AND a.cancelado = 1';
+    }
+
+    $sql .= ' ORDER BY a.data DESC, a.equipe_id LIMIT 200';
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute($parametros);
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}

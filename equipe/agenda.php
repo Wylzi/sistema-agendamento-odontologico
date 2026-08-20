@@ -35,6 +35,11 @@ $urlCalendario = $protocolo . '://' . $_SERVER['HTTP_HOST'] . $dirRaiz . '/calen
         <p class="marca-sub">Protocolo Fast</p>
     </div>
 
+    <nav class="nav">
+        <a href="agenda.php" class="ativo">Minha Agenda</a>
+        <a href="historico.php">Historico</a>
+    </nav>
+
     <div class="cabecalho-equipe">
         <div>
             <p class="cabecalho-titulo">Minha agenda</p>

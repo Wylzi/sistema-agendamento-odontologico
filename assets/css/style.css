@@ -695,6 +695,24 @@ label.dia .dia-status {
     font-weight: 500;
     line-height: 1;
 }
+
+.filtro-datas {
+    display: flex;
+    gap: 10px;
+}
+
+.filtro-datas > div {
+    flex: 1;
+}
+
+.historico-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--borda);
+}
+
+.historico-item:last-child {
+    border-bottom: none;
+}
 /* ===== Utilitário: precisa vir por último para vencer as demais regras ===== */
 .escondido {
     display: none !important;

@@ -1,20 +1,13 @@
 <?php
 require_once __DIR__ . '/../includes/auth.php';
-exigirTipo('atendente');
+exigirTipo('integrante');
 
-$hoje = new DateTime('today');
+$histClinicaFixa = null;
+$histEquipeFixa = (int) $_SESSION['equipe_id'];
+$histPodeFiltrar = false;
+$histUrlBase = 'historico.php';
 
-$calAno = isset($_GET['ano']) ? (int) $_GET['ano'] : (int) $hoje->format('Y');
-$calMes = isset($_GET['mes']) ? (int) $_GET['mes'] : (int) $hoje->format('n');
-
-if ($calMes < 1 || $calMes > 12) {
-    $calMes = (int) $hoje->format('n');
-}
-
-$calUrlBase = 'calendario.php';
-$calModo = 'link';
-
-$clinica = buscarClinica((int) $_SESSION['clinica_id']);
+$equipe = buscarEquipe($histEquipeFixa);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -25,7 +18,7 @@ $clinica = buscarClinica((int) $_SESSION['clinica_id']);
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
     <link rel="stylesheet" href="../assets/css/style.css">
-    <title>Agendar — Protocolo Fast</title>
+    <title>Histórico — Protocolo Fast</title>
 </head>
 <body>
     <div class="marca">
@@ -34,17 +27,16 @@ $clinica = buscarClinica((int) $_SESSION['clinica_id']);
     </div>
 
     <nav class="nav">
-        <a href="calendario.php" class="ativo">Agendar</a>
-        <a href="agendamentos.php">Agendamentos</a>
-        <a href="historico.php">Histórico</a>
+        <a href="agenda.php">Minha agenda</a>
+        <a href="historico.php" class="ativo">Histórico</a>
     </nav>
 
     <p class="contexto-usuario">
         <?= htmlspecialchars($_SESSION['usuario_nome']) ?> ·
-        <?= htmlspecialchars($clinica['nome'] ?? 'Sem clínica') ?>
+        <?= htmlspecialchars($equipe['nome'] ?? '') ?>
     </p>
 
-    <?php require __DIR__ . '/../includes/_calendario.php'; ?>
+    <?php require __DIR__ . '/../includes/_historico.php'; ?>
 
     <p><a href="../logout.php" class="link-sair">Sair</a></p>
 </body>

@@ -43,6 +43,7 @@ if (isset($_SESSION['flash'])) {
     <nav class="nav">
         <a href="calendario.php">Agendar</a>
         <a href="agendamentos.php" class="ativo">Agendamentos</a>
+        <a href="historico.php">Histórico</a>
     </nav>
 
     <p class="contexto-usuario">

@@ -26,4 +26,5 @@ $paginaAtual = basename($_SERVER['SCRIPT_NAME']);
         <a href="usuarios.php" class="<?= $paginaAtual === 'usuarios.php' ? 'ativo' : '' ?>">Usuários</a>
         <a href="clinicas.php" class="<?= $paginaAtual === 'clinicas.php' ? 'ativo' : '' ?>">Clínicas</a>
         <a href="calendario.php" class="<?= $paginaAtual === 'calendario.php' ? 'ativo' : '' ?>">Calendário</a>
+        <a href="historico.php" class="<?= $paginaAtual === 'historico.php' ? 'ativo' : '' ?>">Histórico</a>
     </nav>
