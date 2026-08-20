@@ -682,6 +682,19 @@ label.dia .dia-status {
 .card .calendario-semana {
     max-width: 100%;
 }
+
+.acoes-topo {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+}
+
+.acoes-topo .link-acao,
+.acoes-topo .btn-texto {
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1;
+}
 /* ===== Utilitário: precisa vir por último para vencer as demais regras ===== */
 .escondido {
     display: none !important;

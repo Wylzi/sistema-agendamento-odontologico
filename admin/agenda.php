@@ -68,9 +68,12 @@ require __DIR__ . '/_cabecalho.php';
             <div class="card">
                 <div class="card-topo">
                     <span class="chip-equipe"><?= htmlspecialchars($ag['equipe_nome']) ?></span>
-                    <button type="button" class="btn-texto" onclick="document.getElementById('troca-<?= $ag['id'] ?>').classList.toggle('escondido')">
-                        Trocar equipe
-                    </button>
+                    <span class="acoes-topo">
+                        <button type="button" class="btn-texto" onclick="document.getElementById('troca-<?= $ag['id'] ?>').classList.toggle('escondido')">
+                            Trocar equipe
+                        </button>
+                        <a href="editar.php?id=<?= $ag['id'] ?>" class="link-acao">Editar</a>
+                    </span>
                 </div>
 
                 <p class="paciente-nome"><?= htmlspecialchars($ag['paciente_nome']) ?></p>
