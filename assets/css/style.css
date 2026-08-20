@@ -576,6 +576,39 @@ textarea:focus {
     font-size: 0.85rem;
 }
 
+/* ===== Agenda da equipe ===== */
+.cabecalho-equipe {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.cabecalho-titulo {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.cabecalho-sub {
+    font-size: 0.8rem;
+    color: var(--cinza-texto);
+    margin-top: 1px;
+}
+
+.card-equipe {
+    border-left: 3px solid var(--dourado);
+}
+
+.agenda-data {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.agenda-hora {
+    font-family: var(--fonte-dado);
+    font-size: 0.9rem;
+}
+
 /* ===== Utilitário: precisa vir por último para vencer as demais regras ===== */
 .escondido {
     display: none !important;
