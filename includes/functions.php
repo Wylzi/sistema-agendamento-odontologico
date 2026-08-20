@@ -611,3 +611,74 @@ function gerarIcsAgenda(array $agenda, string $nomeCalendario): string
 
     return implode("\r\n", $linhas);
 }
+
+/* ===================== Exceções de calendário ===================== */
+
+function listarExcecoesFuturas(): array
+{
+    $pdo = getConexao();
+    $stmt = $pdo->query(
+        'SELECT id, data, tipo, motivo FROM excecoes_calendario
+         WHERE data >= CURDATE()
+         ORDER BY data'
+    );
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+function salvarExcecao(string $data, string $tipo, ?string $motivo): array
+{
+    $dt = DateTime::createFromFormat('Y-m-d', $data);
+    if (!$dt || $dt->format('Y-m-d') !== $data) {
+        return ['sucesso' => false, 'erro' => 'Data inválida.'];
+    }
+
+    if ($data < (new DateTime('today'))->format('Y-m-d')) {
+        return ['sucesso' => false, 'erro' => 'Não é possível alterar datas passadas.'];
+    }
+
+    if (!in_array($tipo, ['bloqueado', 'liberado'], true)) {
+        return ['sucesso' => false, 'erro' => 'Tipo inválido.'];
+    }
+
+    $diaSemana = (int) $dt->format('w');
+
+    if ($tipo === 'liberado' && $diaSemana !== 6) {
+        return ['sucesso' => false, 'erro' => 'Só é possível liberar sábados.'];
+    }
+
+    if ($tipo === 'bloqueado' && ($diaSemana === 0 || $diaSemana === 6)) {
+        return ['sucesso' => false, 'erro' => 'Sábados e domingos já são bloqueados por padrão.'];
+    }
+
+    $motivo = $motivo !== null ? trim($motivo) : '';
+
+    $pdo = getConexao();
+    $stmt = $pdo->prepare(
+        'INSERT INTO excecoes_calendario (data, tipo, motivo)
+         VALUES (:data, :tipo, :motivo)
+         ON DUPLICATE KEY UPDATE tipo = VALUES(tipo), motivo = VALUES(motivo)'
+    );
+    $stmt->execute([
+        'data'   => $data,
+        'tipo'   => $tipo,
+        'motivo' => $motivo !== '' ? $motivo : null,
+    ]);
+
+    return ['sucesso' => true];
+}
+
+function removerExcecao(int $id): array
+{
+    $pdo = getConexao();
+    $stmt = $pdo->prepare('DELETE FROM excecoes_calendario WHERE id = :id');
+    $stmt->execute(['id' => $id]);
+    return ['sucesso' => true];
+}
+
+function contarAgendamentosNaData(string $data): int
+{
+    $pdo = getConexao();
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM agendamentos WHERE data = :data');
+    $stmt->execute(['data' => $data]);
+    return (int) $stmt->fetchColumn();
+}
